@@ -2,7 +2,10 @@
 /**
  * @author: Martin Hall-May <djmanmaster@gmx.net?subject=Transparency>
  */
-class AlphaPDF extends FPDI
+
+namespace Royopa\AlphaPDF;
+
+class AlphaPDF extends Fpdi
 {
 	var $extgstates = array();
 
@@ -65,4 +68,3 @@ class AlphaPDF extends FPDI
 		parent::_putresources();
 	}
 }
-?>

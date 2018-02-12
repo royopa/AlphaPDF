@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true">
+    <testsuites>
+        <testsuite name="AlphaPDF Test Suite">
+            <directory>./tests/Royopa/AlphaPDF</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>./src/Royopa/AlphaPDF</directory>
+        </whitelist>
+    </filter>
+</phpunit>
