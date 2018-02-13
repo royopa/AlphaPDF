@@ -9,6 +9,8 @@ use setasign\Fpdi\Fpdi as setaSignFpdi;
 
 class Fpdi extends setaSignFpdi
 {
+    protected $numPages;
+
     public function getK()
     {
         return $this->k;
@@ -32,6 +34,11 @@ class Fpdi extends setaSignFpdi
     public function getNumPages()
     {
         return $this->numPages;
+    }
+
+    public function setNumPages($numPages)
+    {
+        $this->numPages = $numPages;
     }
 
     public function getAngle()

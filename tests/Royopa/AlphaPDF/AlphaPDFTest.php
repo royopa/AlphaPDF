@@ -14,12 +14,18 @@ class AlphaPDFTest extends TestCase
 {
     protected $user;
     protected $sourceFile;
+    protected $outputFile;
 
     public function testIsInstanceOfFpdi()
     {
         $alphaPdf = new AlphaPDF();
         $isInstance = false;
         if ($alphaPdf instanceof \setasign\Fpdi\Fpdi) {
+            $isInstance = true;
+        }
+        $this->assertTrue($isInstance);
+
+        if ($alphaPdf instanceof \Royopa\AlphaPDF\Fpdi) {
             $isInstance = true;
         }
         $this->assertTrue($isInstance);
@@ -38,7 +44,7 @@ class AlphaPDFTest extends TestCase
     {
         $waterMark = new WaterMark($this->sourceFile, $this->user);
 
-        $fileOutput = $waterMark
+        $waterMark
             ->doWaterMark()
             ->Output('F', $this->outputFile)
         ;
@@ -61,6 +67,6 @@ class AlphaPDFTest extends TestCase
     public function tearDown()
     {
         $fs = new Filesystem();
-        //$fs->remove($this->outputFile);
+        $fs->remove($this->outputFile);
     }
 }

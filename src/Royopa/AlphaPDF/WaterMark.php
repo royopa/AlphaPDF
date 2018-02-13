@@ -15,7 +15,6 @@ class WaterMark
     protected $pdf;
     protected $waterMarkBigText;
     protected $waterMarkSmallText;
-    protected $numPages;
 
     public function __construct($sourceFile, AdvancedUserInterface $user)
     {
@@ -28,7 +27,7 @@ class WaterMark
         $this->pdf = new AlphaPDF();
 
         // set the source file and gets the number of pages
-        $this->pdf->numPages = $this->pdf->setSourceFile($sourceFile);
+        $this->pdf->setNumPages($this->pdf->setSourceFile($sourceFile));
 
         $this->waterMarkBigText = "C O N F I D E N C I A L";
 
@@ -43,10 +42,7 @@ class WaterMark
 
     public function doWaterMark()
     {
-        $pagecount = $this->pdf->numPages;
-
-        for ($i = 1; $i <= $pagecount; $i++) {
-
+        for ($i = 1; $i <= $this->pdf->getNumPages(); $i++) {
             $this->pdf->addPage();//<- moved from outside loop
             $tplidx = $this->pdf->importPage($i);
             $this->pdf->useTemplate($tplidx, 10, 20, 200);
