@@ -13,11 +13,11 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 class WaterMark
 {
     protected $pdf;
-    protected $waterMarkBigText = "C O N F I D E N C I A L";
-    protected $waterMarkSmallText = '';
-    protected $numPages = 0;
+    protected $waterMarkBigText;
+    protected $waterMarkSmallText;
+    protected $numPages;
 
-    public function __construct($sourceFile)
+    public function __construct($sourceFile, AdvancedUserInterface $user)
     {
         $fs = new Filesystem();
 
@@ -29,6 +29,11 @@ class WaterMark
 
         // set the source file and gets the number of pages
         $this->pdf->numPages = $this->pdf->setSourceFile($sourceFile);
+
+        $this->waterMarkBigText = "C O N F I D E N C I A L";
+
+        $now = new \DateTime('now');
+        $this->waterMarkSmallText = 'Impresso por - ' . $user->getUsername() . ' em ' . $now->format('d/m/Y H:i');
     }
 
     public function getPdf()
@@ -36,7 +41,7 @@ class WaterMark
         return $this->pdf;
     }
 
-    public function doWaterMark(AdvancedUserInterface $user)
+    public function doWaterMark()
     {
         $pagecount = $this->pdf->numPages;
 
@@ -85,20 +90,12 @@ class WaterMark
             // Rotate "confidential" text
             $this->_rotate(55);
 
-            $now = new \DateTime('now');
-
-            $this->pdf->Write(
-                0,
-                'Impresso por - ' .
-                    $user->getUsername() .
-                    ' em ' .
-                    $now->format('d/m/Y H:i')
-                );
+            $this->pdf->Write(0, $this->waterMarkSmallText);
 
             $this->_rotate(0);//<-added
         }
 
-        return $this->pdf->Output();
+        return $this->pdf;
     }
 
     /**
