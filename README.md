@@ -17,8 +17,9 @@ Example
 -------
 
 ```php
-use Royopa/AlphaPDF;
-
+use Royopa\AlphaPDF\AlphaPDF;
+use Royopa\AlphaPDF\WaterMark;
+use Royopa\AlphaPDF\Fpdi;
 
 ```
 

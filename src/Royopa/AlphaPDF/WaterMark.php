@@ -3,6 +3,8 @@
 namespace Royopa\AlphaPDF;
 
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 /**
  * WaterMark
@@ -10,14 +12,18 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  */
 class WaterMark
 {
-    public $pdf;
+    protected $pdf;
+    protected $waterMarkBigText = "C O N F I D E N C I A L";
+    protected $waterMarkSmallText = '';
+    protected $numPages = 0;
 
-    public $wmText = "C O N F I D E N C I A L";
-
-    /** $file and $newFile have to include the full path. */
     public function __construct($sourceFile)
     {
-        //$this->pdf = new \FPDF_FPDI();
+        $fs = new Filesystem();
+
+        if (! $fs->exists($sourceFile)) {
+            throw new FileNotFoundException('File not found.');
+        }
 
         $this->pdf = new AlphaPDF();
 
@@ -25,7 +31,11 @@ class WaterMark
         $this->pdf->numPages = $this->pdf->setSourceFile($sourceFile);
     }
 
-    /** @todo Make the text nicer and add to all pages */
+    public function getPdf()
+    {
+        return $this->pdf;
+    }
+
     public function doWaterMark(AdvancedUserInterface $user)
     {
         $pagecount = $this->pdf->numPages;
@@ -40,7 +50,7 @@ class WaterMark
             $this->pdf->SetFont('Arial', 'B', 60);
 
             //definir o tipo de texto
-            $this->pdf->SetTextColor(204,0,0);
+            $this->pdf->SetTextColor(204, 0, 0);
 
             // set alpha to semi-transparency
             $this->pdf->SetAlpha(0.5);
@@ -53,7 +63,7 @@ class WaterMark
             //Rotaciona o texto "confidencial"
             $this->_rotate(55);
 
-            $this->pdf->Write(0, $this->wmText);
+            $this->pdf->Write(0, $this->waterMarkBigText);
 
             $this->_rotate(0);//<-added
 
@@ -62,7 +72,7 @@ class WaterMark
             $this->pdf->SetFont('Arial', 'B', 13);
 
             //definir o tipo de texto
-            $this->pdf->SetTextColor(204,0,0);
+            $this->pdf->SetTextColor(204, 0, 0);
 
             // set alpha to semi-transparency
             $this->pdf->SetAlpha(0.5);
@@ -72,7 +82,7 @@ class WaterMark
 
             $this->pdf->SetLeftMargin(-35);
 
-            //Rotaciona o texto "confidencial"
+            // Rotate "confidential" text
             $this->_rotate(55);
 
             $now = new \DateTime('now');
@@ -94,22 +104,28 @@ class WaterMark
     /**
      * @param integer $angle
      */
-    protected function _rotate($angle,$x=-1,$y=-1)
+    protected function _rotate($angle, $x=-1, $y=-1)
     {
-        if($x==-1)
-            $x=$this->pdf->x;
-        if($y==-1)
-            $y=$this->pdf->y;
-        if($this->pdf->angle!=0)
+        if ($x==-1) {
+            $x=$this->pdf->getX();
+        }
+            
+        if ($y==-1) {
+            $y=$this->pdf->getY();
+        }
+            
+        if ($this->pdf->getAngle() != 0) {
             $this->pdf->_out('Q');
-        $this->pdf->angle=$angle;
+        }
+            
+        $this->pdf->setAngle($angle);
 
-        if ($angle!=0) {
-            $angle*=M_PI/180;
-            $c=cos($angle);
-            $s=sin($angle);
-            $cx=$x*$this->pdf->k;
-            $cy=($this->pdf->h-$y)*$this->pdf->k;
+        if ($angle != 0) {
+            $angle *= M_PI/180;
+            $c = cos($angle);
+            $s = sin($angle);
+            $cx = $x * $this->pdf->getK();
+            $cy = ($this->pdf->getH() - $y) * $this->pdf->getK();
 
             $this->pdf->_out(sprintf(
                 'q %.5f %.5f %.5f %.5f %.2f %.2f cm 1 0 0 1 %.2f %.2f cm',

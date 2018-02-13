@@ -7,7 +7,8 @@ namespace Royopa\AlphaPDF;
 
 class AlphaPDF extends Fpdi
 {
-	var $extgstates = array();
+	protected $extgstates = array();
+	protected $angle = 0;
 
 	// alpha: real value from 0 (transparent) to 1 (opaque)
 	// bm:    blend mode, one of the following:
