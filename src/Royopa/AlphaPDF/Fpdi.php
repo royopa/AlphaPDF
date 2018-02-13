@@ -9,7 +9,8 @@ use setasign\Fpdi\Fpdi as setaSignFpdi;
 
 class Fpdi extends setaSignFpdi
 {
-    protected $numPages;
+    protected $numPages = 0;
+    protected $angle;
 
     public function getK()
     {
