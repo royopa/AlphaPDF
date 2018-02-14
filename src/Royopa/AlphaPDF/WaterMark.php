@@ -33,6 +33,10 @@ class WaterMark
 
         $now = new \DateTime('now');
         $this->waterMarkSmallText = 'Impresso por - ' . $user->getUsername() . ' em ' . $now->format('d/m/Y H:i');
+
+        if (method_exists($user, 'getName')) {
+            $this->waterMarkSmallText = 'Impresso por - ' . $user->getUsername() . ' - ' . $user->getName() . ' em ' . $now->format('d/m/Y H:i');
+        }
     }
 
     public function getPdf()
@@ -44,51 +48,28 @@ class WaterMark
     {
         for ($i = 1; $i <= $this->pdf->getNumPages(); $i++) {
             $this->pdf->addPage();//<- moved from outside loop
+
             $tplidx = $this->pdf->importPage($i);
             $this->pdf->useTemplate($tplidx, 10, 20, 200);
 
-            // now write some text above the imported page
-            $this->pdf->SetFont('Arial', 'B', 60);
-
             //definir o tipo de texto
             $this->pdf->SetTextColor(204, 0, 0);
-
             // set alpha to semi-transparency
             $this->pdf->SetAlpha(0.5);
 
-            //posição na tela
+            // Big Text
+            $this->pdf->SetFont('Arial', 'B', 60);
             $this->pdf->SetX(-1);
-
             $this->pdf->SetLeftMargin(-78);
-
-            //Rotaciona o texto "confidencial"
             $this->_rotate(55);
-
             $this->pdf->Write(0, $this->waterMarkBigText);
 
-            $this->_rotate(0);//<-added
-
-            //escreve os dados do usuário
-            // now write some text above the imported page
+            // Small Text
             $this->pdf->SetFont('Arial', 'B', 13);
-
-            //definir o tipo de texto
-            $this->pdf->SetTextColor(204, 0, 0);
-
-            // set alpha to semi-transparency
-            $this->pdf->SetAlpha(0.5);
-
-            //posição na tela
             $this->pdf->SetX(225);
-
+            $this->pdf->SetY(22);
             $this->pdf->SetLeftMargin(-35);
-
-            // Rotate "confidential" text
-            $this->_rotate(55);
-
             $this->pdf->Write(0, $this->waterMarkSmallText);
-
-            $this->_rotate(0);//<-added
         }
 
         return $this->pdf;
@@ -122,7 +103,8 @@ class WaterMark
 
             $this->pdf->_out(sprintf(
                 'q %.5f %.5f %.5f %.5f %.2f %.2f cm 1 0 0 1 %.2f %.2f cm',
-                $c,$s,-$s,$c,$cx,$cy,-$cx,-$cy));
+                $c,$s,-$s,$c,$cx,$cy,-$cx,-$cy)
+            );
         }
     }
 }
